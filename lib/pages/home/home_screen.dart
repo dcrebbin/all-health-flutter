@@ -1,5 +1,9 @@
+import 'package:all_health_flutter/pages/home/hormones.dart';
+import 'package:all_health_flutter/pages/home/microbiome.dart';
+import 'package:all_health_flutter/pages/home/overview.dart';
 import 'package:flutter/material.dart';
 
+import 'body_composition.dart';
 import 'dna_list.dart';
 import 'test_widget.dart';
 
@@ -15,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('All Health'),
@@ -35,6 +39,9 @@ class _HomePageState extends State<HomePage> {
             Tab(
               text: 'Microbiome',
             ),
+            Tab(
+              text: 'Body Composition',
+            ),
           ],
           onTap: (index) {
             setState(() {});
@@ -42,10 +49,11 @@ class _HomePageState extends State<HomePage> {
         )),
         body: TabBarView(
           children: [
-            Test(),
+            Overview(),
             DnaList(),
-            Test(),
-            Test(),
+            Hormones(),
+            Microbiome(),
+            BodyComposition(),
           ],
         ),
       ),
