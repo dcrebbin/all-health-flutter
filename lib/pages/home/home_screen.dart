@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: DefaultTabController(
-      length: 2,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('All Health'),
@@ -24,10 +24,16 @@ class _HomePageState extends State<HomePage> {
             child: TabBar(
           tabs: [
             Tab(
-              text: 'Home',
+              text: 'Overview',
             ),
             Tab(
               text: 'DNA',
+            ),
+            Tab(
+              text: 'Hormones',
+            ),
+            Tab(
+              text: 'Microbiome',
             ),
           ],
           onTap: (index) {
@@ -35,7 +41,12 @@ class _HomePageState extends State<HomePage> {
           },
         )),
         body: TabBarView(
-          children: [Test(), DnaList()],
+          children: [
+            Test(),
+            DnaList(),
+            Test(),
+            Test(),
+          ],
         ),
       ),
     ));
