@@ -13,9 +13,6 @@ class Overview extends StatefulWidget {
 }
 
 class _OverviewState extends State<Overview> {
-  @override
-  int? _value = 1;
-
   List<String> items = const <String>[
     'Water',
     'Calories',
