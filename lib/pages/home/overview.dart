@@ -26,6 +26,46 @@ class _OverviewState extends State<Overview> {
     'Sleep Score',
   ];
 
+  List<int> waterIntake = [400, 1200, 1500, 1350, 2000, 2200, 1200];
+  List<int> calorieIntake = [1800, 2000, 2200, 1500, 2000, 2200, 1200];
+  List<double> macroIntake = [65, 75, 35, 60, 70, 75, 90];
+  List<double> microIntake = [20, 35, 25, 45, 35, 55, 35];
+  List<double> activityLevel = [60, 30, 10, 50, 70, 40, 60];
+  List<Map<String, int>> bloodPressure = [
+    {
+      'systolic': 120,
+      'diastolic': 80,
+    },
+    {
+      'systolic': 130,
+      'diastolic': 85,
+    },
+    {
+      'systolic': 110,
+      'diastolic': 88,
+    },
+    {
+      'systolic': 130,
+      'diastolic': 90,
+    },
+    {
+      'systolic': 120,
+      'diastolic': 92,
+    },
+    {
+      'systolic': 150,
+      'diastolic': 95,
+    },
+    {
+      'systolic': 130,
+      'diastolic': 98,
+    },
+  ];
+  List<double> bloodSugar = [4.5, 4.6, 4.7, 4.8, 3.9, 4.0, 5.1];
+  List<double> bloodOxygen = [98, 96, 97, 96, 95, 97, 99];
+  List<int> restingHeartRate = [70, 71, 72, 73, 64, 75, 76];
+  List<int> sleepScore = [70, 71, 72, 73, 74, 75, 76];
+
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height,
