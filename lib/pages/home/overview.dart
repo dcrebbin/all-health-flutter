@@ -12,6 +12,20 @@ class Overview extends StatefulWidget {
   State<Overview> createState() => _OverviewState();
 }
 
+class Metric {
+  List<double> data = [];
+  double min = 0;
+  double max = 0;
+  double increment = 0;
+
+  Metric({
+    required this.data,
+    required this.min,
+    required this.max,
+    required this.increment,
+  });
+}
+
 class _OverviewState extends State<Overview> {
   List<String> items = const <String>[
     'Water',
@@ -26,45 +40,70 @@ class _OverviewState extends State<Overview> {
     'Sleep Score',
   ];
 
-  List<int> waterIntake = [400, 1200, 1500, 1350, 2000, 2200, 1200];
-  List<int> calorieIntake = [1800, 2000, 2200, 1500, 2000, 2200, 1200];
-  List<double> macroIntake = [65, 75, 35, 60, 70, 75, 90];
-  List<double> microIntake = [20, 35, 25, 45, 35, 55, 35];
-  List<double> activityLevel = [60, 30, 10, 50, 70, 40, 60];
-  List<Map<String, int>> bloodPressure = [
-    {
-      'systolic': 120,
-      'diastolic': 80,
-    },
-    {
-      'systolic': 130,
-      'diastolic': 85,
-    },
-    {
-      'systolic': 110,
-      'diastolic': 88,
-    },
-    {
-      'systolic': 130,
-      'diastolic': 90,
-    },
-    {
-      'systolic': 120,
-      'diastolic': 92,
-    },
-    {
-      'systolic': 150,
-      'diastolic': 95,
-    },
-    {
-      'systolic': 130,
-      'diastolic': 98,
-    },
-  ];
-  List<double> bloodSugar = [4.5, 4.6, 4.7, 4.8, 3.9, 4.0, 5.1];
-  List<double> bloodOxygen = [98, 96, 97, 96, 95, 97, 99];
-  List<int> restingHeartRate = [70, 71, 72, 73, 64, 75, 76];
-  List<int> sleepScore = [70, 71, 72, 73, 74, 75, 76];
+  String selectedMetric = "Water";
+
+  Map<String, Metric> metricToGraphConfig = {
+    "Water": Metric(
+      data: [400, 1200, 1500, 1350, 2000, 2200, 1200],
+      min: 0,
+      max: 2500,
+      increment: 500,
+    ),
+    "Calories": Metric(
+      data: [1800, 2000, 2200, 1500, 2000, 2200, 1200],
+      min: 0,
+      max: 2500,
+      increment: 500,
+    ),
+    "Macro-nutrients": Metric(
+      data: [65, 75, 35, 60, 70, 75, 90],
+      min: 0,
+      max: 100,
+      increment: 10,
+    ),
+    "Micro-nutrients": Metric(
+      data: [20, 35, 25, 45, 35, 55, 35],
+      min: 0,
+      max: 100,
+      increment: 10,
+    ),
+    "Activity": Metric(
+      data: [60, 30, 10, 50, 70, 40, 60],
+      min: 0,
+      max: 100,
+      increment: 10,
+    ),
+    "Blood Pressure": Metric(
+      data: [120, 130, 110, 130, 120, 150, 130],
+      min: 0,
+      max: 100,
+      increment: 10,
+    ),
+    "Blood Sugar": Metric(
+      data: [4.5, 4.6, 4.7, 4.8, 3.9, 4.0, 5.1],
+      min: 0,
+      max: 10,
+      increment: 0.1,
+    ),
+    "Blood Oxygen": Metric(
+      data: [98, 96, 97, 96, 95, 97, 99],
+      min: 0,
+      max: 100,
+      increment: 10,
+    ),
+    "Resting Heart Rate": Metric(
+      data: [70, 71, 72, 73, 64, 75, 76],
+      min: 0,
+      max: 100,
+      increment: 10,
+    ),
+    "Sleep Score": Metric(
+      data: [70, 71, 72, 73, 74, 75, 76],
+      min: 0,
+      max: 100,
+      increment: 10,
+    ),
+  };
 
   Widget build(BuildContext context) {
     return Container(
@@ -103,9 +142,15 @@ class _OverviewState extends State<Overview> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                  padding: const EdgeInsets.all(8), child: Text('Chart Type')),
+                  padding: const EdgeInsets.all(8),
+                  child: const Text('Chart Type')),
               DropdownMenu(
                   textStyle: const TextStyle(fontSize: 15),
+                  onSelected: (value) {
+                    setState(() {
+                      selectedMetric = value ?? "Water";
+                    });
+                  },
                   dropdownMenuEntries: items.map((item) {
                     return DropdownMenuEntry(
                       value: item,
@@ -171,15 +216,15 @@ class _OverviewState extends State<Overview> {
           );
         },
       ),
-      titlesData: const FlTitlesData(
+      titlesData: FlTitlesData(
         show: true,
-        rightTitles: AxisTitles(
+        rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        topTitles: AxisTitles(
+        topTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        bottomTitles: AxisTitles(
+        bottomTitles: const AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 30,
@@ -189,8 +234,8 @@ class _OverviewState extends State<Overview> {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 1,
-            reservedSize: 15,
+            interval: metricToGraphConfig[selectedMetric]?.increment ?? 1,
+            reservedSize: 40,
           ),
         ),
       ),
@@ -198,21 +243,19 @@ class _OverviewState extends State<Overview> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
+      minX: 1,
+      maxX: 7,
+      minY: metricToGraphConfig[selectedMetric]?.min ?? 0,
+      maxY: metricToGraphConfig[selectedMetric]?.max ?? 100,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-          ],
+          spots: metricToGraphConfig[selectedMetric]
+                  ?.data
+                  .asMap()
+                  .entries
+                  .map((e) => FlSpot(e.key.toDouble(), e.value))
+                  .toList() ??
+              [],
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
