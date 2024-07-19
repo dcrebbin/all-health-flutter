@@ -26,6 +26,59 @@ class Metric {
   });
 }
 
+class UserInfo {
+  String name = "";
+  DateTime dateOfBirth = DateTime.now();
+  double heightCm = 0;
+  double weightKg = 0;
+
+  UserInfo({
+    required this.name,
+    required this.dateOfBirth,
+    required this.heightCm,
+    required this.weightKg,
+  });
+}
+
+class DailyData {
+  double water = 0;
+  double calories = 0;
+  double macroNutrients = 0;
+  double microNutrients = 0;
+  dynamic bloodPressure = {
+    "systolic": 0,
+    "diastolic": 0,
+  };
+  double bloodSugar = 0;
+  double bloodOxygen = 0;
+  double restingHeartRate = 0;
+  double sleepScore = 0;
+  double activity = 0;
+
+  DailyData({
+    required this.water,
+    required this.calories,
+    required this.macroNutrients,
+    required this.microNutrients,
+    required this.bloodPressure,
+    required this.bloodSugar,
+    required this.bloodOxygen,
+    required this.restingHeartRate,
+    required this.sleepScore,
+    required this.activity,
+  });
+}
+
+class DailyGoals {
+  double water = 0;
+  double calories = 0;
+
+  DailyGoals({
+    required this.water,
+    required this.calories,
+  });
+}
+
 class _OverviewState extends State<Overview> {
   List<String> items = const <String>[
     'Water',
@@ -106,6 +159,81 @@ class _OverviewState extends State<Overview> {
   };
 
   Widget build(BuildContext context) {
+    var userInfo = UserInfo(
+      name: "John Smith",
+      dateOfBirth: DateTime(1995, 1, 1),
+      heightCm: 175,
+      weightKg: 80,
+    );
+
+    var dailyData = DailyData(
+      water: 1000,
+      activity: 30,
+      bloodOxygen: 98,
+      bloodPressure: {
+        "systolic": 120,
+        "diastolic": 80,
+      },
+      calories: 1800,
+      bloodSugar: 5.5,
+      macroNutrients: 65,
+      microNutrients: 35,
+      restingHeartRate: 70,
+      sleepScore: 70,
+    );
+
+    var dailyGoals = DailyGoals(
+      water: 2500,
+      calories: 2200,
+    );
+
+    double calculateBMI() {
+      return userInfo.weightKg /
+          (userInfo.heightCm / 100 * userInfo.heightCm / 100);
+    }
+
+    String calculateAge() {
+      return (DateTime.now().difference(userInfo.dateOfBirth).inDays / 365)
+          .toStringAsFixed(0);
+    }
+
+    String todaysDate() {
+      DateTime now = DateTime.now();
+      String daySuffix(int day) {
+        if (day >= 11 && day <= 13) {
+          return 'th';
+        }
+        switch (day % 10) {
+          case 1:
+            return 'st';
+          case 2:
+            return 'nd';
+          case 3:
+            return 'rd';
+          default:
+            return 'th';
+        }
+      }
+
+      List<String> months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      String formattedDate =
+          "${months[now.month - 1]} ${now.day}${daySuffix(now.day)} ${now.year}";
+      return formattedDate;
+    }
+
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -116,24 +244,24 @@ class _OverviewState extends State<Overview> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('John Smith (Male)'),
-                    Text('Age: 26'),
-                    Text('Height: 175cm'),
-                    Text('Weight: 80kg'),
-                    Text('BMI: 30'),
+                    Text(userInfo.name),
+                    Text('Age: ${calculateAge()}'),
+                    Text('Height: ${userInfo.heightCm}cm'),
+                    Text('Weight: ${userInfo.weightKg}kg'),
+                    Text('BMI: ${calculateBMI().toStringAsFixed(2)}'),
                   ],
                 ),
               ),
               const Text('Accountability Picture'),
             ],
           ),
-          const Center(
+          Center(
             child: Text(
-              'Today (28th July 2024)',
-              style: TextStyle(
+              'Today (${todaysDate()})',
+              style: const TextStyle(
                 fontSize: 16,
               ),
             ),
@@ -170,19 +298,20 @@ class _OverviewState extends State<Overview> {
               child: LineChart(mainData())),
           Container(
             padding: const EdgeInsets.all(8),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Water: 1000/2500ml'),
-                Text('Calories: 1800/2200'),
-                Text('Macro-nutrients: 65%'),
-                Text('Micro-nutrients: 35%'),
-                Text('Activity Level: 30%'),
-                Text('Blood Pressure: 120/80mmHg'),
-                Text('Blood Sugar: 5.5mg/dl'),
-                Text('Blood Oxygen:95%'),
-                Text('Resting Heart Rate: 70'),
-                Text('Sleep Score: 70%'),
+                Text('Water: ${dailyData.water}/${dailyGoals.water}ml'),
+                Text('Calories: ${dailyData.calories}/${dailyGoals.calories}'),
+                Text('Macro-nutrients: ${dailyData.macroNutrients}%'),
+                Text('Micro-nutrients: ${dailyData.microNutrients}%'),
+                Text('Activity Level: ${dailyData.activity}%'),
+                Text(
+                    'Blood Pressure: ${dailyData.bloodPressure['systolic']}/${dailyData.bloodPressure['diastolic']}mmHg'),
+                Text('Blood Sugar: ${dailyData.bloodSugar}mg/dl'),
+                Text('Blood Oxygen: ${dailyData.bloodOxygen}%'),
+                Text('Resting Heart Rate: ${dailyData.restingHeartRate}'),
+                Text('Sleep Score: ${dailyData.sleepScore}%'),
               ],
             ),
           ),
