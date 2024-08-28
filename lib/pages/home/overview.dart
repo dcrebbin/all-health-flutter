@@ -136,7 +136,7 @@ class _OverviewState extends State<Overview> {
       data: [4.5, 4.6, 4.7, 4.8, 3.9, 4.0, 5.1],
       min: 0,
       max: 10,
-      increment: 0.1,
+      increment: 0,
     ),
     "Blood Oxygen": Metric(
       data: [98, 96, 97, 96, 95, 97, 99],
@@ -273,6 +273,9 @@ class _OverviewState extends State<Overview> {
                   padding: const EdgeInsets.all(8),
                   child: const Text('Chart Type')),
               DropdownMenu(
+                  controller: TextEditingController(
+                    text: selectedMetric,
+                  ),
                   textStyle: const TextStyle(fontSize: 15),
                   onSelected: (value) {
                     setState(() {
@@ -330,8 +333,9 @@ class _OverviewState extends State<Overview> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: 1,
-        verticalInterval: 1,
+        drawHorizontalLine: true,
+        horizontalInterval: metricToGraphConfig[selectedMetric]?.increment ?? 1,
+        verticalInterval: 10,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Colors.black,
@@ -356,8 +360,8 @@ class _OverviewState extends State<Overview> {
         bottomTitles: const AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 30,
-            interval: 1,
+            reservedSize: 0,
+            interval: 10,
           ),
         ),
         leftTitles: AxisTitles(
@@ -372,8 +376,8 @@ class _OverviewState extends State<Overview> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 1,
-      maxX: 7,
+      minX: 0,
+      maxX: 6,
       minY: metricToGraphConfig[selectedMetric]?.min ?? 0,
       maxY: metricToGraphConfig[selectedMetric]?.max ?? 100,
       lineBarsData: [
@@ -386,13 +390,14 @@ class _OverviewState extends State<Overview> {
                   .toList() ??
               [],
           isCurved: true,
+          color: Colors.white,
           gradient: LinearGradient(
             colors: gradientColors,
           ),
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: const FlDotData(
-            show: false,
+            show: true,
           ),
           belowBarData: BarAreaData(
             show: true,

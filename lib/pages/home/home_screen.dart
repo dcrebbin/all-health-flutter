@@ -79,7 +79,6 @@ class _HomePageState extends State<HomePage>
             const DailyIntake(),
             const Exercise(),
             const Vitamins(),
-            const BodyComposition(),
             const Hormones(),
             const Microbiome(),
             const DnaList(),
