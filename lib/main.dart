@@ -1,3 +1,4 @@
+import 'package:all_health_flutter/services/database_service.dart';
 import 'package:all_health_flutter/services/test_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,6 +26,7 @@ Future<void> main() async {
 
 registerServices() {
   getIt.registerSingleton<TestService>(TestService());
+  getIt.registerSingleton<DatabaseService>(DatabaseService());
 }
 
 class MyApp extends StatelessWidget {

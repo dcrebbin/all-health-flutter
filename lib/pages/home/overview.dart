@@ -1,7 +1,9 @@
+import 'package:all_health_flutter/services/database_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 
 class Overview extends StatefulWidget {
   Overview({
@@ -23,20 +25,6 @@ class Metric {
     required this.min,
     required this.max,
     required this.increment,
-  });
-}
-
-class UserInfo {
-  String name = "";
-  DateTime dateOfBirth = DateTime.now();
-  double heightCm = 0;
-  double weightKg = 0;
-
-  UserInfo({
-    required this.name,
-    required this.dateOfBirth,
-    required this.heightCm,
-    required this.weightKg,
   });
 }
 
@@ -79,7 +67,28 @@ class DailyGoals {
   });
 }
 
+final GetIt getIt = GetIt.instance;
+
 class _OverviewState extends State<Overview> {
+  Profile userInfo = Profile.fromJson({
+    'id': 0,
+    'name': 'John Smith',
+    'dateOfBirth': '1990-01-01',
+    'gender': 'Male ',
+    'height': 175,
+    'weight': 80,
+  });
+
+  @override
+  void initState() {
+    super.initState();
+    getIt<DatabaseService>().getProfile().then((profile) {
+      setState(() {
+        userInfo = profile;
+      });
+    });
+  }
+
   List<String> items = const <String>[
     'Water',
     'Calories',
@@ -136,7 +145,7 @@ class _OverviewState extends State<Overview> {
       data: [4.5, 4.6, 4.7, 4.8, 3.9, 4.0, 5.1],
       min: 0,
       max: 10,
-      increment: 0.1,
+      increment: 0,
     ),
     "Blood Oxygen": Metric(
       data: [98, 96, 97, 96, 95, 97, 99],
@@ -159,13 +168,6 @@ class _OverviewState extends State<Overview> {
   };
 
   Widget build(BuildContext context) {
-    var userInfo = UserInfo(
-      name: "John Smith",
-      dateOfBirth: DateTime(1995, 1, 1),
-      heightCm: 175,
-      weightKg: 80,
-    );
-
     var dailyData = DailyData(
       water: 1000,
       activity: 30,
@@ -188,12 +190,14 @@ class _OverviewState extends State<Overview> {
     );
 
     double calculateBMI() {
-      return userInfo.weightKg /
-          (userInfo.heightCm / 100 * userInfo.heightCm / 100);
+      return userInfo.weight / (userInfo.height / 100 * userInfo.height / 100);
     }
 
     String calculateAge() {
-      return (DateTime.now().difference(userInfo.dateOfBirth).inDays / 365)
+      return (DateTime.now()
+                  .difference(DateTime.parse(userInfo.dateOfBirth))
+                  .inDays /
+              365)
           .toStringAsFixed(0);
     }
 
@@ -249,8 +253,8 @@ class _OverviewState extends State<Overview> {
                   children: [
                     Text(userInfo.name),
                     Text('Age: ${calculateAge()}'),
-                    Text('Height: ${userInfo.heightCm}cm'),
-                    Text('Weight: ${userInfo.weightKg}kg'),
+                    Text('Height: ${userInfo.height}cm'),
+                    Text('Weight: ${userInfo.weight}kg'),
                     Text('BMI: ${calculateBMI().toStringAsFixed(2)}'),
                   ],
                 ),
@@ -273,6 +277,9 @@ class _OverviewState extends State<Overview> {
                   padding: const EdgeInsets.all(8),
                   child: const Text('Chart Type')),
               DropdownMenu(
+                  controller: TextEditingController(
+                    text: selectedMetric,
+                  ),
                   textStyle: const TextStyle(fontSize: 15),
                   onSelected: (value) {
                     setState(() {
@@ -330,8 +337,9 @@ class _OverviewState extends State<Overview> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: 1,
-        verticalInterval: 1,
+        drawHorizontalLine: true,
+        horizontalInterval: metricToGraphConfig[selectedMetric]?.increment ?? 1,
+        verticalInterval: 10,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Colors.black,
@@ -356,8 +364,8 @@ class _OverviewState extends State<Overview> {
         bottomTitles: const AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 30,
-            interval: 1,
+            reservedSize: 0,
+            interval: 10,
           ),
         ),
         leftTitles: AxisTitles(
@@ -372,8 +380,8 @@ class _OverviewState extends State<Overview> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 1,
-      maxX: 7,
+      minX: 0,
+      maxX: 6,
       minY: metricToGraphConfig[selectedMetric]?.min ?? 0,
       maxY: metricToGraphConfig[selectedMetric]?.max ?? 100,
       lineBarsData: [
@@ -386,13 +394,14 @@ class _OverviewState extends State<Overview> {
                   .toList() ??
               [],
           isCurved: true,
+          color: Colors.white,
           gradient: LinearGradient(
             colors: gradientColors,
           ),
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: const FlDotData(
-            show: false,
+            show: true,
           ),
           belowBarData: BarAreaData(
             show: true,
