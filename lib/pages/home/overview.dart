@@ -79,12 +79,27 @@ class _OverviewState extends State<Overview> {
     'weight': 80,
   });
 
+  DailyIntake dailyIntake = DailyIntake.fromJson({});
+  DailyMonitoring dailyMonitoring = DailyMonitoring.fromJson({});
+
   @override
   void initState() {
     super.initState();
     getIt<DatabaseService>().getProfile().then((profile) {
       setState(() {
         userInfo = profile;
+      });
+    });
+
+    getIt<DatabaseService>().getDailyIntake().then((intake) {
+      setState(() {
+        dailyIntake = intake;
+      });
+    });
+
+    getIt<DatabaseService>().getDailyMonitoring().then((monitoring) {
+      setState(() {
+        dailyMonitoring = monitoring;
       });
     });
   }
@@ -168,22 +183,6 @@ class _OverviewState extends State<Overview> {
   };
 
   Widget build(BuildContext context) {
-    var dailyData = DailyData(
-      water: 1000,
-      activity: 30,
-      bloodOxygen: 98,
-      bloodPressure: {
-        "systolic": 120,
-        "diastolic": 80,
-      },
-      calories: 1800,
-      bloodSugar: 5.5,
-      macroNutrients: 65,
-      microNutrients: 35,
-      restingHeartRate: 70,
-      sleepScore: 70,
-    );
-
     var dailyGoals = DailyGoals(
       water: 2500,
       calories: 2200,
@@ -270,55 +269,53 @@ class _OverviewState extends State<Overview> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                  padding: const EdgeInsets.all(8),
-                  child: const Text('Chart Type')),
-              DropdownMenu(
-                  controller: TextEditingController(
-                    text: selectedMetric,
-                  ),
-                  textStyle: const TextStyle(fontSize: 15),
-                  onSelected: (value) {
-                    setState(() {
-                      selectedMetric = value ?? "Water";
-                    });
-                  },
-                  dropdownMenuEntries: items.map((item) {
-                    return DropdownMenuEntry(
-                      value: item,
-                      label: item,
-                      labelWidget: Text(
-                        item,
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                    );
-                  }).toList()),
-            ],
-          ),
-          Container(
-              padding: const EdgeInsets.all(18),
-              width: MediaQuery.of(context).size.width,
-              height: 200,
-              child: LineChart(mainData())),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Container(
+          //         padding: const EdgeInsets.all(8),
+          //         child: const Text('Chart Type')),
+          //     DropdownMenu(
+          //         controller: TextEditingController(
+          //           text: selectedMetric,
+          //         ),
+          //         textStyle: const TextStyle(fontSize: 15),
+          //         onSelected: (value) {
+          //           setState(() {
+          //             selectedMetric = value ?? "Water";
+          //           });
+          //         },
+          //         dropdownMenuEntries: items.map((item) {
+          //           return DropdownMenuEntry(
+          //             value: item,
+          //             label: item,
+          //             labelWidget: Text(
+          //               item,
+          //               style: const TextStyle(fontSize: 15),
+          //             ),
+          //           );
+          //         }).toList()),
+          //   ],
+          // ),
+          // Container(
+          //     padding: const EdgeInsets.all(18),
+          //     width: MediaQuery.of(context).size.width,
+          //     height: 200,
+          //     child: LineChart(mainData())),
           Container(
             padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Water: ${dailyData.water}/${dailyGoals.water}ml'),
-                Text('Calories: ${dailyData.calories}/${dailyGoals.calories}'),
-                Text('Macro-nutrients: ${dailyData.macroNutrients}%'),
-                Text('Micro-nutrients: ${dailyData.microNutrients}%'),
-                Text('Activity Level: ${dailyData.activity}%'),
+                Text('Water: ${dailyIntake.water}/${dailyGoals.water}ml'),
                 Text(
-                    'Blood Pressure: ${dailyData.bloodPressure['systolic']}/${dailyData.bloodPressure['diastolic']}mmHg'),
-                Text('Blood Sugar: ${dailyData.bloodSugar}mg/dl'),
-                Text('Blood Oxygen: ${dailyData.bloodOxygen}%'),
-                Text('Resting Heart Rate: ${dailyData.restingHeartRate}'),
-                Text('Sleep Score: ${dailyData.sleepScore}%'),
+                    'Calories: ${dailyIntake.calories}/${dailyGoals.calories}'),
+                Text(
+                    'Blood Pressure: ${dailyMonitoring.bloodPressure.isEmpty ? 'N/A' : '${dailyMonitoring.bloodPressure['systolic']}/${dailyMonitoring.bloodPressure['diastolic'] + "mmHg"}'} '),
+                Text('Blood Sugar: ${dailyMonitoring.bloodSugar}mg/dl'),
+                Text('Blood Oxygen: ${dailyMonitoring.bloodOxygen}%'),
+                Text('Resting Heart Rate: ${dailyMonitoring.restingHeartRate}'),
+                Text('Sleep Score: ${dailyMonitoring.sleepScore}%'),
               ],
             ),
           ),
