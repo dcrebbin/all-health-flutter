@@ -104,6 +104,9 @@ class DatabaseService {
     prefs = sharedPreferences;
   }
 
+  late DailyIntake dailyIntake;
+  late DailyMonitoring dailyMonitoring;
+
   initDatabase() async {
     WidgetsFlutterBinding.ensureInitialized();
     database = openDatabase(
@@ -119,6 +122,11 @@ class DatabaseService {
       },
       version: 1,
     );
+  }
+
+  Future<void> updateMetric(String metric, String value) async {
+    final db = await database;
+    await db.update('daily_intake', {'${metric}': value});
   }
 
   Future<void> insertDailyIntake(DailyIntake dailyIntake) async {
@@ -147,9 +155,11 @@ class DatabaseService {
     final List<Map<String, dynamic>> maps = await db
         .query('daily_monitoring', where: 'date = ?', whereArgs: [date]);
     if (maps.isEmpty) {
-      return DailyMonitoring.fromJson({});
+      dailyMonitoring = DailyMonitoring.fromJson({});
+      return dailyMonitoring;
     }
-    return DailyMonitoring.fromJson(maps[0]);
+    dailyMonitoring = DailyMonitoring.fromJson(maps[0]);
+    return dailyMonitoring;
   }
 
   Future<DailyIntake> getDailyIntake() async {
@@ -171,10 +181,12 @@ class DatabaseService {
         'carbohydrates': 0,
       });
       await insertDailyIntake(newDailyIntake);
-      return newDailyIntake;
+      dailyIntake = newDailyIntake;
+      return dailyIntake;
     }
 
-    return DailyIntake.fromJson(maps[0]);
+    dailyIntake = DailyIntake.fromJson(maps[0]);
+    return dailyIntake;
   }
 
   Future<Profile> getProfile() async {

@@ -20,8 +20,13 @@ final _router = GoRouter(
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
   registerServices();
-
+  await loadApplication();
   runApp(const MyApp());
+}
+
+loadApplication() async {
+  await getIt<DatabaseService>().initPrefs();
+  await getIt<DatabaseService>().initDatabase();
 }
 
 registerServices() {
@@ -35,7 +40,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(),
+      theme: ThemeData(
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: Colors.blue,
+        ),
+      ),
       color: const Color.fromARGB(0, 255, 255, 255),
       title: 'All Health',
       routerConfig: _router,

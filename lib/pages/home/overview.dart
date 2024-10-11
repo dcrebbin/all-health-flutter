@@ -194,7 +194,9 @@ class _OverviewState extends State<Overview> {
 
     String calculateAge() {
       return (DateTime.now()
-                  .difference(DateTime.parse(userInfo.dateOfBirth))
+                  .difference(DateTime.parse(userInfo.dateOfBirth == ""
+                      ? "1990-01-01"
+                      : userInfo.dateOfBirth))
                   .inDays /
               365)
           .toStringAsFixed(0);
